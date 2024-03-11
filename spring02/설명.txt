@@ -1,0 +1,67 @@
+1. JDBC: 자바 데이터베이스 프로그래밍 표준
+
+2. driver: JDBC표준에 따라 DB와 연결하는 소프트웨어
+
+3. Connection: 데이터베이스와 연결하는 객체
+					 필요할때 연결하고 사용이 끝나면 해체할 경우 비용이 크다
+					 
+4. Connection Pool = CP
+		- Connection을 미리 여러개 만들어서 필요하면 빌려서 사용 후 반납
+		- 대중적인 제품으로는 apache DBCP
+		- 스프링의 기본 커넥션풀은 Hikari CP
+
+5. 스프링부트에서 드라이버를 선택하면 부트는 자동으로 Hikari 설정을 잡는다. (안쓴다가 안됨. 무조건 잡음.)
+
+6. Connection은 사용이 끝나면 연결을 끊는다
+	그런데 CP는 사용이 끝나면 연결을 끊는 것이 아니라 반납하는 객체가 필요하다
+	이렇게 빌리고 반납하는 Connection객체를 DataSource라고 한다 
+	
+7. Connection Pool은 연결을 가지고 DataSource를 미리 생성한 다음 빌려주고 반납받으면서 운용
+
+8. application.properties 설정
+	- 드라이버 이름, 서버url, username, password
+	
+9. mybatis로 작업하면 실행되는 sql이 출력X -> sql을 출력하기위한 설정이 필요
+	sql을 출력하는 라이브러리가 필요 -> log4jdbc-log4j2
+	
+10. 시스템의 상태를 출력하는 것을 logging이라고 한다
+	- 자바 로깅 표준: slf4j 인터페이스
+	- 자바 로깅 구현체: log4j, log4j2, logback ...
+		cf) log4j, log4j2, logback은 사용법이 똑같다? -? O (표준의 구현체이기 때문에)
+		ex) 삼성냉장고든 LG냉장고든 중국냉장고든 성능의 차이만 있을 뿐 사용법은 똑같다
+		
+11. logback에 대한 설정파일: logback.xml
+	- 로깅레벨: error < warn < info < debug < trace (trace로 갈수록 출력양이 많아짐)
+	- 예를 들어 400오류의 경우
+		레벨이 info면 아무 내용도 안나온다
+		레벨을 debug로 하면 어떤 값이 들어와서 거부했다는 내용이 콘솔에 나온다
+		
+12. component-scan
+	- 스프링이 생성할 객체들을 찾을 패키지
+	- 기본값은 프로젝트 패키지(com.example.demo)의 하위 패키지
+	
+13. 클래스의 이름이 겹치면
+	- 스프링 빈은 싱글톤(객체가 1개만 만들어진다)
+	- 그런데 보통 객체를 하나 만들때 객체 이름은 클래스 이름을 소문자로...
+	   DeptDao deptDao = new DeptDao();
+	- 스프링이 @Component로 객체를 생성할 때 그 객체의 이름은 첫글자만 소문자로 바꾼 클래스의 이름과 같다
+	- 객체이름을 바꾸고 싶다면 @Component("바꾸고싶은이름")
+14. 몰라도 됨
+	- @Autowired는 type으로 주입
+		@Autowired
+		private Tire tire;
+	- 위 코드를 주입할 때 Tire 객체가 둘 이상이면 오류발생
+	- 2차적으로 이름으로 객체를 구입해서 주입할 수 있다: Qualifier
+	  따라서 객체의 이름은 겹쳐서는 안된다
+
+----------------------------------------------------------------------------------------------
+
+1.  오라클 driver
+	- 자바의 데이터베이스 프로그래밍 표준: JDBC
+	- JDBC에서 데이터베이스를 연결하는 프로그램: driver
+	
+2. 라이브러리: logback, mybatis, spring web
+	- 스프링부트 마법사로 프로젝트를 생성하면 마법사가 라이브러리를 동작시킨다
+	
+	
+3. 스프링부트 데이터베이스를 연결하는 프로그램: driver 
