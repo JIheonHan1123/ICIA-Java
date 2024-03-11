@@ -15,22 +15,22 @@ class A_Unit {
 	}
 }
 
-class A_마린 extends Unit {
+class A_마린 extends A_Unit {
 }
 
-class A_고스트 extends Unit {
+class A_고스트 extends A_Unit {
 }
 
-class A_배틀크루저 extends Unit {
+class A_배틀크루저 extends A_Unit {
 }
 
 public class A_리스코프치환원칙Test4 {
 	public static void main(String[] args) {
 		List<A_Unit> list = new ArrayList<>();
 
-//		list.add(new A_마린());
-//		list.add(new A_배틀크루저());
-//		list.add(new A_고스트());
+		list.add(new A_마린());
+		list.add(new A_배틀크루저());
+		list.add(new A_고스트());
 
 		for (A_Unit unit : list) {
 			unit.move();
