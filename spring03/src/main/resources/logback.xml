@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<!-- 콘솔창 출력 설정 -->
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern> %d{HH:mm:ss.SSS} %highlight(%-5level) %magenta(%-4relative) --- [ %thread{10} ] %cyan(%logger{40}) : %msg%n </pattern>
+		</encoder>
+	</appender>
+	
+	<!--  controller에 매핑된 url을 출력하도록 설정 -->
+	<logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" level="trace" ></logger>
+	
+	<!--  sql 작업에 대한 로깅 설정 -->
+	<logger name="jdbc.sqlonly" level="info" />
+	<logger name="jdbc.resultsettable" level="info"/>
+	<logger name="jdbc.audit" level="warn"/>
+	<logger name="jdbc.sqltiming" level="warn"/>
+	<logger name="jdbc.resultset" level="warn"/>
+	<logger name="jdbc.connection" level="warn"/>
+	
+	<!-- 로깅 레벨 설정 -->
+	<!-- level="debug": 스프링이 동작하는게 이상할 때 근데 그 이유는 모를 때 자세하게 보고 싶을 때  -->
+	<root level="info">
+		<appender-ref ref="console" />
+	</root>
+</configuration>
