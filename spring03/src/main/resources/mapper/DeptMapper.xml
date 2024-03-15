@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.march14.DeptDao">
+	<!--
+		1. mybatis에서 sql과 dao를 분리 -> 협업시 1명이 sql을 전담할 수 있다
+		2. 하지만 분리되어 있기 때문에 sql과 dao의 메소드를 연결해야 한다
+		3. 만약 연결에 실패하면 (invalid bound statement (not found)) 에러가 뜬다
+		4. xml mapper태그 쪽에 dao의 이름을 적어준다 (=xml쪽에 dao의 fqfn을 적어준다)
+		5. mybatis에서 클래스 이름은 FQFN인데 짧게 줄여서 사용하는 것을 typeAlias라고 하며 소문자로 시작한다
+	 -->
+	 
+	 <!-- select id="dao에서 연동할 메소드 이름" result Type="sql의 리턴 값" -->
+	<select id="findPosition" resultType="string">
+		select distinct nvl(position, '사원') position from emp2
+	</select>
+	
+	<select id="countGroupByPosition" resultType="long">
+		select count(*) as cnt from emp2 group by position
+	</select>
+	
+	<select id="countGroupByPosition3" resultType="map">
+		select nvl(position, '사원'), count(*) as cnt from emp2 group by position
+	</select>
+	
+	<select id="countGroupByPosition2" resultType="map">
+		select deptno, count(*) as cnt from professor where hpage is not null group by deptno
+	</select>
+</mapper>
