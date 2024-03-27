@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class Member {
+public class Member { // Dao작업하는 클래스
 	private String username;
 	private String password;
 	private String email;

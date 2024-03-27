@@ -11,6 +11,14 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <script src="/script/join.js"></script>
 <title>Insert title here</title>
+<script>
+	// RedirectAttribute는 자동으로 jsp로 전달된다
+	// 에러메시지가 전달되면 alert로 출력한다
+	const msg = '${msg}';
+	if (msg !== '') {
+		alert(msg)
+	}
+</script>
 </head>
 <body>
 	<div id="page">

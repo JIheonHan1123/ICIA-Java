@@ -34,7 +34,6 @@ async function usernameCheck() {
 	const $element = $("#username");
 	const value = $element.val();
 	$element.next().text("");
-
 	// 패턴비교
 	if (patterns.username[0].test(value) == false) {
 		$element.next().text(patterns.username[1]).addClass("error");
@@ -42,14 +41,17 @@ async function usernameCheck() {
 	}
 
 	try {
-		await $.ajax("/member/id-check?username=" + value);
-		$element.next().text("사용가능합니다").addClass("success");
+		// 서버의 응답은 메시지+상태코드로 구성된 객체인데
+		// $.ajax()는 200인 경우에 서버에서 결과데이터(메시지)를 자동으로 꺼내도록 구현되어있다 
+		const msg = await $.ajax("/member/id-check?username=" + value); // 그래서 msg에 객체가 오는게 아니라 문자열이 들어감
+		$element.next().text(msg);
 		return true;
-	} catch {
-		$element.next().text("사용중인 아이디입니다").addClass("error");
+	} catch (response) {
+		// 200이 아닌 경우 catch절을 이용해 서버응답을 얻어와서 에러 메시지를 꺼낸다
+		console.log(response);
+		$element.next().text(response.responseText);
 		return false;
 	}
-
 	/*
 	$.ajax({
 		url: "/member/id-check",
@@ -132,8 +134,9 @@ $(document).ready(function() {
 		const r4 = emailCheck();
 		const r5 = birthdayCheck();
 		const result = r1 && r2 && r3 && r4 && r5;
-		if (result == false)
-			return;
-		$("join_form").submit();
+		if (result == false){
+			return false;
+		}
+		$("#join_form").submit();
 	});
 });
