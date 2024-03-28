@@ -13,6 +13,7 @@ public interface MemberDao {
 	@Select("select count(*) from member where username=#{username} and rownum=1")
 	public Boolean existsByUsername(String username);
 
+	// 회원가입
 	public Long save(Member member);
 
 	// 이메일로 아이디 찾기
