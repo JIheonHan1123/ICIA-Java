@@ -54,7 +54,7 @@ class MemberDaoTest {
 		assertEquals(1L, dao.changeEmail("a@a.com", "spring"));
 		assertEquals(0L, dao.changeEmail("a@a.com", "winter"));
 
-		assertEquals(1L, dao.deleteByUsername("spring"));
-		assertEquals(0L, dao.deleteByUsername("winter"));
+		assertEquals(1L, dao.delete("spring"));
+		assertEquals(0L, dao.delete("winter"));
 	}
 }

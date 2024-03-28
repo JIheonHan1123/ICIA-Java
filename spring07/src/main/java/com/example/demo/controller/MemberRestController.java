@@ -4,13 +4,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.service.MemberService;
@@ -28,14 +31,14 @@ public class MemberRestController {
 	private MemberService service;
 
 	@ExceptionHandler(ConstraintViolationException.class) // 자바에서 클래스 이름은 ""이런 문자열 형식을 잘 안쓰고 이렇게 쓴다
-	public ResponseEntity<?> CVEHandler(ConstraintViolationException e) {
+	public ResponseEntity<String> CVEHandler(ConstraintViolationException e) {
 		String msg = e.getConstraintViolations().stream().findFirst().get().getMessage(); // 여러 예외 중에서 제일 처음꺼 하나를 꺼내는 방식
 		return ResponseEntity.status(409).body(msg);
 	}
 
 	// ResponseEntity: 응답데이터 + 상태코드
 	@GetMapping("/member/id-check")
-	public ResponseEntity<?> idCheck(@NotEmpty(message = "아이디는 필수입력입니다") String username) {
+	public ResponseEntity<String> idCheck(@NotEmpty(message = "아이디는 필수입력입니다") String username) {
 		Boolean result = service.idCheck(username);
 		if (result == true) {
 			return ResponseEntity.ok("사용가능합니다");
@@ -58,5 +61,37 @@ public class MemberRestController {
 		} catch (IOException e) {
 			return ResponseEntity.notFound().build();
 		}
+	}
+
+//	3. 아이디 찾기
+	@GetMapping("/member/find-id")
+	public ResponseEntity<String> findId(String email) {
+		String username = service.findId(email);
+		if (username == null) {
+			return ResponseEntity.status(409).body("사용자를 찾을 수 없습니다.");
+		}
+		return ResponseEntity.ok(username);
+	}
+
+//	4. 비밀번호 리셋 - 비밀번호 찾기 기능은 개인정보보호법 위반
+	@GetMapping("/member/reset-password")
+	public ResponseEntity<String> restPassword(String username) {
+		Boolean result = service.resetPassword(username);
+		if (result == false) {
+			return ResponseEntity.status(409).body("사용자를 찾을 수 없습니다.");
+		}
+		return ResponseEntity.ok("임시비밀번호를 이메일로 보냈습니다.");
+	}
+
+	// ResponseEntity<여기>에서 여기에는 객체만 올 수 있다
+	// 여기에 아무 객체도 안담으려면 void형 객체 표현 Void를 사용한다
+	@Secured("ROLE_USER")
+	@PostMapping("/member/change-email")
+	public ResponseEntity<Void> changeEmail(String email, Principal principal) {
+		Boolean result = service.changeEmail(email, principal.getName());
+		if (result) {
+			return ResponseEntity.ok(null);
+		}
+		return ResponseEntity.status(409).body(null);
 	}
 }

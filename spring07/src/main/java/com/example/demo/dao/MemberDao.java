@@ -33,5 +33,5 @@ public interface MemberDao {
 
 	// 아이디 삭제 -> 회원탈퇴에서 사용
 	@Delete("delete from member where username=#{username} and rownum=1")
-	public Long deleteByUsername(String username);
+	public Long delete(String username);
 }
