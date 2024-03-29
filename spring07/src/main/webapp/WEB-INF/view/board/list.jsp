@@ -1,7 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,7 +11,7 @@
 <title>Insert title here</title>
 <!-- WEB/INF폴더 안에는 직접실행금지. 직접실행하면 안되는 애들만 넣고 나머지(css, js)는 넣으면 안된다 -->
 </head>
-<body> 
+<body>
 	<div id="page">
 		<header>
 			<jsp:include page="/WEB-INF/view/include/header.jsp" />
@@ -26,6 +24,46 @@
 				<jsp:include page="/WEB-INF/view/include/aside.jsp" />
 			</aside>
 			<section>
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>번호</th>
+							<th>제목</th>
+							<th>글쓴이</th>
+							<th>날짜</th>
+							<th>읽기</th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach items="${page.list}" var="b">
+							<tr>
+								<td>${b.bno}</td>
+								<td><a href="/board/read?bno=${b.bno}">${b.title}</a></td>
+								<td>${b.writer}</td>
+								<td>${b.writeTime}</td>
+								<td>${b.readCnt}</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+				<div id="pagination" style="display: flex; justify-content: center;">
+					<ul class="pagination">
+						<c:if test="${page.prev>0}">
+							<li class="page-item"><a class="page-link" href="/?pageno=${page.prev}">이전으로 </a></li>
+						</c:if>
+						<c:forEach begin="${page.start}" end="${page.end}" var="i">
+							<c:if test="${page.pageno==i}">
+								<li class="page-item active"><a class="page-link" href="/?pageno=${i}">${i}</a></li>
+							</c:if>
+							<c:if test="${page.pageno!=i }">
+								<li class="page-item"><a class="page-link" href="/?pageno=${i}">${i}</a></li>
+							</c:if>
+						</c:forEach>
+						<c:if test="${page.next>0}">
+							<li class="page-item"><a class="page-link" href="/?pageno=${page.next}">다음으로 </a></li>
+						</c:if>
+					</ul>
+				</div>
 			</section>
 			<aside>
 				<jsp:include page="/WEB-INF/view/include/aside.jsp" />

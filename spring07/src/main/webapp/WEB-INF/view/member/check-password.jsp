@@ -11,6 +11,7 @@
 	비밀번호 확인
 	<form action="/member/check-password" method="post">
 		<input type="password" name="password">
+		<input type="hidden" name="_csrf" value="${_csrf.token}">
 		<button>확인</button>
 	</form>
 </body>

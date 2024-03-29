@@ -18,8 +18,12 @@ import jakarta.servlet.http.HttpServletResponse;
 public class MyAccessDenialHandler implements AccessDeniedHandler {
 	@Override
 	public void handle(HttpServletRequest req, HttpServletResponse res, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-//		HttpSession session = req.getSession();
-//		session.setAttribute("msg", "잘못된 접근입니다");
-		res.sendRedirect("/");
+		// req.getHeader("X-Requested-With") 값이 null이 아니면 ajax
+		String 요청방식 = req.getHeader("X-Requested-With");
+		if (요청방식 == null) {
+			res.sendRedirect("/");
+		} else {
+			res.sendError(403, "권한없음");
+		}
 	}
 }

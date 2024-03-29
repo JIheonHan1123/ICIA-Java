@@ -4,32 +4,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 <script>
-   $(document).ready(function(){
-      // 면접준비: e.prvenDefault(), 다른 것 하나 더 있음.
-      // sumbit,a 태그는 클릭 + 이동 -> 두번째 동작을 비활성화한다.
-      e.preventDefault();
-      
-      // #logout을 클릭하면 form을 만들어서 붙인 다음 전송
-      
-      // js로 폼을 생성하면 메모리에 존재 -> submit 불가능하다. -> html에 폼을 붙인 다음에 submit을 해야한다.
-      const html ='
-      <form action='/member/logout' method='post'>
-      </form>
-      ';
-      $(html).appendTo($('body').submit());
-      
-      // const a = 부모.append(자식)   -> 결과는 부모 -> a는 부모
-      // const a = 자식.appendTo(부모)   -> 결과는 자식   -> a는 자식
-      
-      // $(선택자) : 요소를 선택 ex) $('p')
-      // $(html) : 요소를 생성 ex) $('<p>')
-   })
-</script>
-<meta charset="UTF-8">
+    $(document).ready(function () {
+        $("#logout").on("click", function (e) {
+          // 면접준비: e.prvenDefault(), 다른 것 하나 더 있음.
+          // sumbit,a 태그는 클릭 + 이동 -> 두번째 동작을 비활성화한다.
+          e.preventDefault(); 
+
+          // #logout을 클릭하면 form을 만들어서 붙인 다음 전송
+
+          // js로 폼을 생성하면 메모리에 존재 -> submit 불가능하다. -> html에 폼을 붙인 다음에 submit을 해야한다.
+          const html = `
+          <form action='/member/logout', method='post'>
+          	<input type="hidden" name="_csrf" value="${_csrf.token}">
+          </form>
+          `;
+          $(html).appendTo($("body")).submit();
+          // const a = 부모.append(자식)   -> 결과는 부모 -> a는 부모
+          // const a = 자식.appendTo(부모)   -> 결과는 자식   -> a는 자식
+
+          // $(선택자) : 요소를 선택 ex) $('p')
+          // $(html) : 요소를 생성 ex) $('<p>')
+        });
+      });
+    </script>
+<meta charset="UTF-8" />
 <title>Insert title here</title>
 </head>
 <body>
@@ -60,6 +62,3 @@
 	</div>
 </body>
 </html>
-
-
-

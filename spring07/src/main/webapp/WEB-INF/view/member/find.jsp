@@ -25,10 +25,12 @@
 
 		$("#find_password").on("click", function() {
 			const params = {
-				username : $("#username").val()
+				username : $("#username").val(),
+				_csrf : '${_csrf.token}'
 			};
 			$.ajax({
 				url : "/member/reset-password",
+				method : "post",
 				data : params,
 				success : function(result) {
 					Swal.fire("비밀번호 찾기 성공", "임시비밀번호를 이메일로 보냈습니다", "success")

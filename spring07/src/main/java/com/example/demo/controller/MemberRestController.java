@@ -74,7 +74,7 @@ public class MemberRestController {
 	}
 
 //	4. 비밀번호 리셋 - 비밀번호 찾기 기능은 개인정보보호법 위반
-	@GetMapping("/member/reset-password")
+	@PostMapping("/member/reset-password")
 	public ResponseEntity<String> restPassword(String username) {
 		Boolean result = service.resetPassword(username);
 		if (result == false) {

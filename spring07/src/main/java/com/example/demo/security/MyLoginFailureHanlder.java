@@ -17,6 +17,6 @@ public class MyLoginFailureHanlder extends SimpleUrlAuthenticationFailureHandler
 	public void onAuthenticationFailure(HttpServletRequest req, HttpServletResponse res, AuthenticationException exception) throws IOException, ServletException {
 //		HttpSession session = req.getSession();
 //		session.setAttribute("msg", "로그인에 실패했습니다");
-		res.sendRedirect("/member/login");
+		res.sendRedirect("/member/login?error");
 	}
 }

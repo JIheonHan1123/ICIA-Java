@@ -59,6 +59,9 @@
 					<div class="mb-3 mt-3 d-grid">
 						<button id="join" type="button" class="btn btn-primary btn-block">가입</button>
 					</div>
+					<!-- csrf를 활성화 했기때문에 이게 없으면 바로 403떨어짐 -->
+					<!-- 모든 post 요청에는 csrf가 따라와야함 -->
+					<input type="hidden" name="_csrf" value="${_csrf.token}">
 				</form>
 			</section>
 			<aside>

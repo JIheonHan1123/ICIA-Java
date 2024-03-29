@@ -8,19 +8,14 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<!-- <script>
-   const msg = '${msg}';
-   if(msg!=='')
-      alert(msg);
+<script>
+	$(function() {
+		if (location.search === '?error') {
+			$('#alert').css('display', 'block');
+		}
+	})
+</script>
 
-   $(document).ready(function() {
-      //$('#login-form').submit();
-      
-      $('#login').on('click', function() {
-         $('#login-form').submit();
-      });
-   })
-</script>-->
 <title>로그인</title>
 </head>
 <body>
@@ -36,6 +31,9 @@
 				<jsp:include page="/WEB-INF/view/include/aside.jsp" />
 			</aside>
 			<section>
+				<div class="alert alert-danger" id="alert" style="display: none;">
+					<strong>로그인에 실패했습니다</strong>
+				</div>
 				<form action="/member/login" id="login-form" method="post">
 					<div class="mb-3 mt-3">
 						<label for="username" class="form-label">아이디:</label> <input type="text" class="form-control" id="username" name="username" maxlength="10"> <span class="message"></span>
