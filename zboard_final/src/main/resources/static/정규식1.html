@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정규식을 이용해보자</title>
+</head>
+<body>
+	<script>
+		// 정규식(Regular Expression) : 문자열의 패턴을 지정하는 표현식
+		// 정규식은 js의 일부가 아니라 독립된 분야임.
+		const value1 = '1234';
+		const value2 = 'abcd';
+
+		// 1. 정규식 전체는 /로 감싼다.
+		// 2. []는 하나의 문자임.
+		// 3. []는 입력가능한 문자의 범위를 지정
+		const regExp = /[0-9]/;
+
+		// 값이 정규식을 통과하는지 검증
+		console.log(regExp.test(value1)); // true
+		console.log(regExp.test(value2)); // false
+	</script>
+</body>
+</html>

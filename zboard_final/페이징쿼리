@@ -1,0 +1,50 @@
+-- 페이징 : 게시판 사용자는 앞의 몇 페이지만 보다가 나간다
+-- 오라클 페이징
+--              읽기          출력
+--      1       1~10          1~10
+--      2       1~20          11~20
+--      3       1~30          21~30
+
+-- 1. 정렬을 해서 새로 작성한 글이 제일 위에 나오게 하자
+select * from board order by bno desc;
+
+-- 2. 모든 select는 행번호 rownum을 가진다(가상 컬럼)
+select rownum, board.* from board order by bno desc;
+
+-- 3. rownum을 이용해서 정렬한 게시판에서 제일 앞에 10개를 꺼내자
+select * from board where rownum<=10 order by bno desc;
+
+-- 4. 우리가 원한 것 : bno 내림차순으로 정렬한 다음 앞에 10개를 꺼내라
+--       sql은 where -> order by 실행
+--       실제로는 10개를 꺼낸다음 bno 순으로 정렬
+--    정렬을 먼저하고 그 다음에 꺼내자 : 서브쿼리 ()안에 있는 sql을 먼저 실행
+--       inline view : 서브쿼리가 from 다음에
+    select * from
+        (select * from board order by bno desc)
+    where rownum <=10;
+    
+-- 5. 페이징 쿼리를 사용하는 목적 : 필요한 데이터만 읽어오자
+--    select * from board order by bno desc
+--      board의 모든 행을 다 읽어서 순서를 바꾸는 쿼리 -> 너무 너무 느리다
+--    bno에 대해서는 인덱스(board_pk_bno)가 있잖아
+--    인덱스는 기본이 오름차순 -> 인덱스를 거꾸로 타면 내림차순
+--    오라클에게 인덱스 거꾸로 타면서 데이터를 출력해라...hint
+    select /*+ index_desc(board board_pk_bno) */ * from board;
+
+-- 4번을 힌트로 변경하면
+select * from
+    (select /*+ index_desc(board board_pk_bno) */ * from board)
+where rownum<=10;
+
+-- 6. 11번에서 20번까지 꺼내자
+select * from
+    (select /*+ index_desc(board board_pk_bno) */ * from board)
+where rownum>=11 and rownum<=20;
+    -- rownum은 1이 있어야 2가 있고, 2가 있어야 3이 있다....
+
+-- 7. rownum<=20를 먼저 실행해야 한다
+select * from
+    (select rownum as rnum, b.* from
+        (select /*+ index_desc(board board_pk_bno) */ * from board) b
+    where rownum<=20)
+where rnum>=11;

@@ -1,0 +1,21 @@
+1. 관리자로 c##springg 사용자 생성
+2. c##springg으로 테이블, 키, 시퀀스, 인덱스 생성
+3. 프로젝트 생성: spring web, lombok, devtool, oracle, mybatis, validation, security, java mail sender
+4. application.properties 설정 + application.properties있는 폴더에 log4jdbc.log4j2.properties랑 logback 가져오기 
+5. mapper, jsp들어갈 폴더 만들기
+	mapper: src/main/resources \ mapper
+	ex) mapper 파일 작성할 때 빨간줄 에러 뜨는건 Windows -> Preference -> XML(Wild Web Developer)에 첫번째꺼 체크
+	jsp: src\main\webapp\WEB-INF\view
+6. pom.xml설정
+7. member에 대한 작업들 설계
+8. Member 엔티티 작성 
+9. MemberDao 작성
+10. MemberDao 테스트 실행
+11. 스프링시큐리티 설정
+		- SecturityConfig
+		- MyUserDetailService: dao에서 사용자 정보를 읽어와 리턴하는 클래스
+		- MyAccessDenialHanler: 403 오류 처리
+		- LonginFailureHandler: 로그인실패처리
+12. Security 테스트 실행
+13. jsp 작성
+

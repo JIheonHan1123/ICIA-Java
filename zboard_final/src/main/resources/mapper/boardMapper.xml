@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.BoardDao">
+	<!-- resultType에는 List를 적는게 아니라, 담는 것을 넣는다. 근데 패키지 다 적어야한다. -->
+	<select id="findAll" resultType="com.example.demo.dto.BoardListDto">
+	<![CDATA[
+		select * from
+			(
+			select rownum as rnum, b.* from
+				(select /*+ index_desc(board board_pk_bno) */ 
+				 bno, title, writer, 
+				 to_char(write_time, 'YYYY-MM-DD HH24:MI:SS') as writeTime,
+				 read_cnt as readCnt from board) b
+			where rownum<=#{endRownum}
+			)
+		where rnum>=#{startRownum}
+	]]>
+	</select>
+
+	<!-- 1. insert를 실행할 때 selectKey가 먼저 실행된다(order='before') 2. sql이 새로운 시퀀스를 생성 3. 생성된 long(resultType) 시퀀스값을 전달된 객체의 bno에 넣어라 4. 이제 Board 객체에는 bno이 저장되어 있다 -->
+	<insert id="save" parameterType="com.example.demo.entity.Board">
+		<!-- BEFORE: insert문 실행하기 전에 실행해라 -->
+		<!-- long: 타입은 long이고 -->
+		<!-- bno: 결과값을 bno에 넣어라 -->
+		<selectKey order="BEFORE" resultType="long" keyProperty="bno">
+			select board_seq.nextval from dual
+		</selectKey>
+		insert into board values(#{bno}, #{title}, #{content}, #{writer}, sysdate, 0, 0, 0)
+	</insert>
+
+	<select id="findByBno" resultType="com.example.demo.dto.BoardReadDto">
+		select bno, title, content, writer, to_char(write_time, 'YYYY-MM-DD HH24:MI:SS') as writeTime, read_cnt as readCnt, good_cnt as goodCnt, bad_cnt as badCnt
+		from board where bno=#{bno} and rownum=1
+	</select>
+</mapper>
+
+
+
