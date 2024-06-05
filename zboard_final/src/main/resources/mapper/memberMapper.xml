@@ -5,4 +5,5 @@
 		insert into member(username,password,email,birthday,joinday,profile,role)
 		values(#{username},#{password},#{email},#{birthday},#{joinday},#{profile},#{role})
 	</insert>
+
 </mapper>

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dao.BoardDao;
+import com.example.demo.dao.CommentDao;
+import com.example.demo.dao.MemberBoardDao;
 import com.example.demo.dto.BoardListDto;
 import com.example.demo.dto.BoardReadDto;
 import com.example.demo.dto.BoardUpdateDto;
@@ -22,6 +24,10 @@ import jakarta.validation.Valid;
 public class BoardService {
 	@Autowired
 	private BoardDao boardDao;
+	@Autowired
+	private CommentDao commentDao;
+	@Autowired
+	private MemberBoardDao memberBoardDao;
 	@Value("10")
 	private Long 페이지당글개수;
 	@Value("5")
@@ -79,7 +85,7 @@ public class BoardService {
 	// 글이 없으면 null 리턴
 	// 글이 있고 + 로그인했고 + 작성자가 아님 = 읽기횟수 증가
 
-	// 비로고으니또는
+	// 비로그인
 	public BoardReadDto read(Long bno, String loginId) {
 		// 글이 존재하는지 확인
 		String writer = boardDao.findWriterByBno(bno);
@@ -91,21 +97,22 @@ public class BoardService {
 		if (loginId != null && loginId.equals(writer) == false) {
 			boardDao.increaseReadCnt(bno);
 		}
-		return boardDao.findByBno(bno);
+		BoardReadDto dto = boardDao.findByBno(bno);
+		dto.setComments(commentDao.findByBno(bno));
+		return dto;
 	}
 
 	// 사람이 생각하는 논리적인 작업은 여러줄의 sql: transaction
 	// 물건을 산다 = 돈을준다+물건을 받는다+거스름돈을 받는다
-	// transaction을 구성하는 동작은 모두 성공하거나 모두 실패해야한다
-
-	@Transactional // 다같이 성공하거나 다같이 실패하거나
+	// transaction을 구성하는 동작은 모두 성공하거나 모두 실패해야한다 => 다 같이 성공하거나 다 같이 실패하거나
+	@Transactional
 	public Boolean delete(Long bno, String loginId) {
 		String writer = boardDao.findWriterByBno(bno);
 		if (writer == null)
 			return false;
 		if (writer.equals(loginId) == false)
 			return false;
-		// commentDao.deleteByBno(bno);
+		commentDao.deleteByBno(bno);
 		return boardDao.delete(bno) == 1L;
 	}
 
@@ -116,5 +123,20 @@ public class BoardService {
 		if (writer.equals(loginId) == false)
 			return false;
 		return boardDao.update(dto.getTitle(), dto.getContent(), dto.getBno()) == 1L;
+	}
+
+	@Transactional
+	public Long 추천(Long bno, String loginId) {
+		// 글을 추천하면 MemberBoardDao를 이용해 이미 추천/비추천 글인지 확인
+		// 새로운 추천/비추면
+		// -> MemberBoardDao로 아이디-글번호를 저장
+		// -> BoardDao로 추천수 증가
+		// BoardDao에서 추천수를 읽어서 리턴
+		Boolean exist = memberBoardDao.existsByUsernameAndBno(loginId, bno);
+		if (exist == false) {
+			memberBoardDao.save(loginId, bno);
+			boardDao.increaseGoodCnt(bno);
+		}
+		return boardDao.findGoodCntByBno(bno);
 	}
 }

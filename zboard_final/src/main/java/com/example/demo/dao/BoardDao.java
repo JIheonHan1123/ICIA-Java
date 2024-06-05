@@ -33,4 +33,11 @@ public interface BoardDao {
 
 	@Delete("delete from board where bno=#{bno} and rownum=1")
 	public Long delete(Long bno);
+
+	@Update("update board set good_cnt=good_cnt + 1 where bno=#{bno} and rownum=1")
+	public Long increaseGoodCnt(Long bno);
+
+	@Select("select good_cnt from board where bno=#{bno} and rownum=1")
+	public Long findGoodCntByBno(Long bno);
+
 }

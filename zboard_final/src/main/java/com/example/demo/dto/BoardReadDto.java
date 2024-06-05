@@ -1,5 +1,7 @@
 package com.example.demo.dto;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -15,4 +17,5 @@ public class BoardReadDto {
 	private Long badCnt;
 
 	// 댓글 리스트
+	private List<CommentReadDto> comments;
 }

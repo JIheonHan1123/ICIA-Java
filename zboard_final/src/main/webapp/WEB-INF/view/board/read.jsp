@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,8 +17,6 @@
 <style type="text/css">
 ul {
 	list-style: none;
-	margin: 0;
-	padding: 0;
 }
 
 #lower {
@@ -27,6 +26,15 @@ ul {
 
 #lower_left li, #lower_right li {
 	display: inline-block;
+}
+
+#lower ul {
+	margin: 0;
+	padding: 0;
+}
+
+#summernote {
+	min-height: 450px;
 }
 </style>
 <!-- ------------------ 일단 값을 만들어 놓고 로그인을 했다면 변경해라 ----------------------- -->
@@ -78,6 +86,32 @@ ul {
 		// 내용에 summernote 적용
 		// 변경/삭제버튼을 보이게
 	}
+	
+	function 댓글출력(comments) {
+		// 댓글 모두 지우고 다시 출력
+		
+		// $('#c').remove() -> $('#c') 자신과 자식을 모두 삭제
+		// $('#c').empty() -> 자식을 삭제
+		$('#comments').empty();
+		
+		for(const c of comments) {
+			// 로그인 아이디와 댓글 작성자가 다르면 display:none;
+			const style = loginId==c.writer? '':'display:none;'; 
+			const html = `
+				<div>
+					<span>\${c.writer }</span>
+					<span>\${c.writeTime }</span>
+					<button class="delete_comment" 
+						data-cno="\${c.cno}" style="\${style}">
+						삭제
+					</button>
+					<div>\${c.content }</div>
+				</div>
+				<hr>						
+			`;
+			$('#comments').append(html);
+		}
+	}
 
 	$(document).ready(function() {
 		if (isLogin == true && isWriter == false) {
@@ -86,6 +120,64 @@ ul {
 			글쓴이인경우();
 		}
 		
+		// 로그인 하면 댓글작성 가능하도록 textarea 활성화
+		if (isLogin == true) {
+			$('#comment').prop('disabled', false);
+			$('#comment').attr('placeholder','');
+			$('#write_comment').css('display','inline');
+		}
+		
+		// 댓글 작성 - ajax
+		$('#write_comment').on('click', function() {
+			// 댓글을 입력하지 않은 오류 메시지 + 작업 중단 
+			if($('#comment').val()=='') {
+				alert('댓글을 입력해주세요');
+				return false;
+			}
+			// 댓글 받아오고
+			const params = {
+					bno: '${dto.bno}',
+					content: $('#comment').val(),
+					_csrf: '${_csrf.token}'
+			}
+			// ajax로 작성
+			$.ajax({
+				url: '/comment/write',
+				method: 'post',
+				data: params,
+				success:function(result) {
+					댓글출력(result);
+					$('#comment').val("");
+				}, error:function(response) {
+					console.log(response);
+				}
+			}) // ajax end
+		}) // 댓글 작성 - ajax end
+		
+		// 댓글 삭제
+		// 1. 이벤트 처리할 때 동적으로 생성된 요소는 $(넓은선택자).on('이벤트', 선택자)
+		// 2. 정적으로 생성한 요소도 1번 처리해도 된다
+		// 3. 정적인 요소 vs 동적인 요소 구별하는 방법
+		// 	화면이 로딩될 때($(document).ready일때) 만들어지면 정적, 그 이후에 만들어지면 동적
+		$('#comments').on('click', '.delete_comment', function() {
+			const params = {
+					cno: $(this).attr('data-cno'),
+					bno: '${dto.bno}',
+					_csrf: '${_csrf.token}'
+			};
+			$.ajax({
+				url: '/comment/delete',
+				method: 'post',
+				data: params,
+				success:function(result) {
+					댓글출력(result);
+				}, error:function(response) {
+					console.log(response);
+				}
+			})
+		}) // 댓글 삭제 end
+		
+		// 글 변경
 		$('#update').on('click', function(){
 			const title = $('#title').val();
 			// const content = $('#summernote').val();
@@ -102,8 +194,27 @@ ul {
 				</form>
 			`;
 			$(html).appendTo($('body')).submit();
-		})
-	});
+		}) // 글 변경 end
+		
+		// 추천
+		$('#good-btn').on('click', function(){
+			const params = {
+					bno: '${dto.bno}',
+					_csrf: '${_csrf.token}'
+			};
+			$.ajax({
+				url: '/board/good',
+				method: 'post',
+				data: params,
+				success:function(result) {
+					$('#good-cnt').text(result);
+				}, error:function(response) {
+					console.log(response);
+				}
+			})
+		}) // 추천 end
+		
+	}); // $(document).ready(function() {}) end
 </script>
 <!-- ----------------------------------------------------------------------------------------------- -->
 </head>
@@ -133,17 +244,20 @@ ul {
 						<ul id="lower_right">
 							<li>
 								<button type="button" class="btn btn-primary" id="good-btn" disabled>
-									추천 <span class="badge bg-dark" id="good-cnt">${dto.goodCnt}</span>
+									추천
+									<span class="badge bg-dark" id="good-cnt">${dto.goodCnt}</span>
 								</button>
 							</li>
 							<li>
 								<button type="button" class="btn btn-success" disabled>
-									조회 <span class="badge bg-dark">${dto.readCnt}</span>
+									조회
+									<span class="badge bg-dark">${dto.readCnt}</span>
 								</button>
 							</li>
 							<li>
 								<button type="button" class="btn btn-danger" id="bad-btn" disabled>
-									신고 <span class="badge bg-dark" id="bad-cnt">${dto.badCnt}</span>
+									신고
+									<span class="badge bg-dark" id="bad-cnt">${dto.badCnt}</span>
 								</button>
 							</li>
 						</ul>
@@ -152,13 +266,38 @@ ul {
 						<div class="form-control" id="summernote" name="content">${dto.content}</div>
 					</div>
 				</div>
+
 				<div id="btn_area" class="mb-3 mt-3" style="display: none">
 					<button class="btn btn-success" id="update">변경</button>
 					&nbsp; &nbsp;
 					<button class="btn btn-danger" id="delete">삭제</button>
 				</div>
 
-				<div id="comments"></div>
+				<!-- 댓글 작성할 공간 -->
+				<div class="mb-3 mt-3">
+					<textarea id="comment" style="width: 760px; height: 200px;" disabled placeholder="댓글을 작성하려면 로그인하세요"></textarea>
+					<button id="write_comment" style="display: none;">작성하기</button>
+				</div>
+
+				<!-- 댓글 출력할 공간 -->
+				<div id="comments">
+					<!-- principal 읽어오는 법 -->
+					<!-- sec:authentication property="name" 으로 로그인한 아이디를 읽어와서 var="username"에 저장해라 -->
+					<sec:authentication property="name" var="username" />
+					<c:forEach items="${dto.comments}" var="c">
+						<div>
+							<span>${c.writer}</span>
+							<span>${c.writeTime}"</span>
+							<!-- 현재 로그인한 사용자 아이디와 댓글 작성자가 같은 경우에만 삭제 버튼 -->
+							<c:if test="${c.writer == username}">
+								<button class="delete_comment" data-cno="${c.cno}">삭제</button>
+							</c:if>
+							<div>${c.content}</div>
+						</div>
+						<hr>
+					</c:forEach>
+				</div>
+
 			</section>
 			<aside>
 				<jsp:include page="/WEB-INF/view/include/aside.jsp" />
